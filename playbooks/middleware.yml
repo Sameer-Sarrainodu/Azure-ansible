@@ -1,0 +1,5 @@
+- hosts: middleware
+  become: yes
+  roles:
+    - redis
+    - rabbitmq

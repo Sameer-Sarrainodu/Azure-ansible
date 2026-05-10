@@ -1,0 +1,51 @@
+- name: Install MongoDB on Ubuntu
+  when: ansible_os_family == "Debian"
+  block:
+
+    - name: Add MongoDB GPG key
+      ansible.builtin.apt_key:
+        url: https://www.mongodb.org/static/pgp/server-{{ mongodb_version }}.asc
+        state: present
+
+    - name: Add MongoDB repo
+      ansible.builtin.copy:
+        dest: /etc/apt/sources.list.d/mongodb-org.list
+        content: |
+          deb [ arch=amd64,arm64 ] https://repo.mongodb.org/apt/ubuntu jammy/mongodb-org/{{ mongodb_version }} multiverse
+
+    - name: Install MongoDB
+      ansible.builtin.apt:
+        name: mongodb-org
+        state: present
+        update_cache: yes
+
+- name: Install MongoDB on RHEL
+  when: ansible_os_family == "RedHat"
+  block:
+
+    - name: Copy Mongo repo
+      ansible.builtin.copy:
+        src: mongo.repo
+        dest: /etc/yum.repos.d/mongodb-org.repo
+
+    - name: Install MongoDB
+      ansible.builtin.dnf:
+        name: mongodb-org
+        state: present
+
+# 🔧 CONFIGURATION
+
+- name: Configure MongoDB bind IP
+  ansible.builtin.replace:
+    path: /etc/mongod.conf
+    regexp: '127.0.0.1'
+    replace: "{{ mongodb_bind_ip }}"
+  notify: restart mongodb
+
+# 🚀 SERVICE
+
+- name: Enable and start MongoDB
+  ansible.builtin.service:
+    name: mongod
+    state: started
+    enabled: yes

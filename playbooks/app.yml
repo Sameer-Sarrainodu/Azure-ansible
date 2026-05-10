@@ -1,0 +1,9 @@
+- hosts: app
+  become: yes
+  roles:
+    - frontend
+    - catalogue
+    - user
+    - cart
+    - shipping
+    - payment

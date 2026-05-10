@@ -1,0 +1,9 @@
+timezone: "Asia/Kolkata"
+
+common_packages:
+  - git
+  - curl
+  - unzip
+  - wget
+  - vim
+  - net-tools
