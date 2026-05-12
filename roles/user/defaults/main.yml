@@ -1,0 +1,6 @@
+user_port: 8080
+
+user_repo_url: "https://github.com/roboshop-devops-project/user/archive/main.zip"
+
+mongo_host: "mongodb"
+redis_host: "redis"

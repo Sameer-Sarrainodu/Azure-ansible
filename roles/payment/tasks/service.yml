@@ -1,0 +1,15 @@
+- name: Configure systemd service
+  template:
+    src: payment.service.j2
+    dest: /etc/systemd/system/payment.service
+  notify: restart payment
+
+- name: Reload systemd
+  systemd:
+    daemon_reload: yes
+
+- name: Enable and start payment service
+  service:
+    name: payment
+    state: started
+    enabled: yes

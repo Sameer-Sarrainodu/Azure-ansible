@@ -1,0 +1,10 @@
+frontend_port: 80
+
+frontend_repo_url: "https://github.com/roboshop-devops-project/frontend/archive/main.zip"
+
+nginx_conf_path: >-
+  {{
+    '/etc/nginx/conf.d/roboshop.conf'
+    if ansible_os_family == 'RedHat'
+    else '/etc/nginx/sites-enabled/roboshop.conf'
+  }}

@@ -1,0 +1,51 @@
+- name: Install nginx
+  package:
+    name: nginx
+    state: present
+
+- name: Enable and start nginx
+  service:
+    name: "{{ nginx_service_name }}"
+    state: started
+    enabled: yes
+
+# 🔥 Clean default content
+
+- name: Remove old frontend content
+  file:
+    path: "{{ frontend_app_dir }}"
+    state: absent
+
+- name: Recreate frontend directory
+  file:
+    path: "{{ frontend_app_dir }}"
+    state: directory
+
+# 🔥 Download frontend artifact
+
+- name: Download frontend artifact
+  get_url:
+    url: "{{ frontend_repo_url }}"
+    dest: /tmp/frontend.zip
+
+# 🔥 Extract frontend
+
+- name: Extract frontend
+  unarchive:
+    src: /tmp/frontend.zip
+    dest: /tmp/
+    remote_src: yes
+
+# 🔥 Copy frontend files
+
+- name: Copy frontend files
+  shell: |
+    cp -r /tmp/frontend-main/static/* {{ frontend_app_dir }}/
+
+# 🔥 Configure nginx
+
+- name: Configure nginx reverse proxy
+  template:
+    src: roboshop.conf.j2
+    dest: "{{ nginx_conf_path }}"
+  notify: restart nginx

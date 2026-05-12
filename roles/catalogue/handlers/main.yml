@@ -1,0 +1,4 @@
+- name: restart catalogue
+  service:
+    name: catalogue
+    state: restarted

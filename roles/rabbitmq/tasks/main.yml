@@ -1,0 +1,51 @@
+# 🔥 Install RabbitMQ dependencies
+
+- name: Install Erlang and RabbitMQ on Ubuntu
+  when: ansible_os_family == "Debian"
+  block:
+
+    - name: Install required packages
+      apt:
+        name:
+          - curl
+          - gnupg
+          - apt-transport-https
+        state: present
+        update_cache: yes
+
+    - name: Add RabbitMQ signing key
+      apt_key:
+        url: https://packagecloud.io/rabbitmq/rabbitmq-server/gpgkey
+        state: present
+
+    - name: Add RabbitMQ repository
+      apt_repository:
+        repo: "deb https://packagecloud.io/rabbitmq/rabbitmq-server/ubuntu/ jammy main"
+        state: present
+
+    - name: Install RabbitMQ
+      apt:
+        name: rabbitmq-server
+        state: present
+        update_cache: yes
+
+# 🚀 Start service
+
+- name: Enable and start RabbitMQ
+  service:
+    name: "{{ rabbitmq_service_name }}"
+    state: started
+    enabled: yes
+
+# 👤 Create application user
+
+- name: Create RabbitMQ user
+  community.rabbitmq.rabbitmq_user:
+    user: "{{ rabbitmq_user }}"
+    password: "{{ rabbitmq_password }}"
+    permissions:
+      - vhost: /
+        configure_priv: ".*"
+        read_priv: ".*"
+        write_priv: ".*"
+    state: present

@@ -1,0 +1,4 @@
+- name: restart cart
+  service:
+    name: cart
+    state: restarted

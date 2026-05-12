@@ -1,0 +1,64 @@
+# 🔥 Base setup
+
+- name: Include common role
+  include_role:
+    name: common
+
+# 🔥 Install Java + Maven
+
+- name: Install Java and Maven
+  package:
+    name:
+      - openjdk-17-jdk
+      - maven
+    state: present
+
+# 🔥 Download artifact
+
+- name: Download shipping artifact
+  get_url:
+    url: "{{ shipping_repo_url }}"
+    dest: /tmp/shipping.zip
+
+# 🔥 Clean old app
+
+- name: Remove old app content
+  file:
+    path: "{{ shipping_app_dir }}"
+    state: absent
+
+- name: Recreate app directory
+  file:
+    path: "{{ shipping_app_dir }}"
+    state: directory
+    owner: roboshop
+    group: roboshop
+
+# 🔥 Extract app
+
+- name: Extract shipping artifact
+  unarchive:
+    src: /tmp/shipping.zip
+    dest: /tmp/
+    remote_src: yes
+
+# 🔥 Copy app files
+
+- name: Copy shipping files
+  shell: |
+    cp -r /tmp/shipping-main/* {{ shipping_app_dir }}/
+
+# 🔥 Build application
+
+- name: Build shipping package
+  shell: mvn clean package
+  args:
+    chdir: "{{ shipping_app_dir }}"
+
+# 🔥 Rename JAR
+
+- name: Rename shipping jar
+  shell: |
+    mv target/shipping-1.0.jar shipping.jar
+  args:
+    chdir: "{{ shipping_app_dir }}"

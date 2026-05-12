@@ -1,0 +1,48 @@
+# 🔥 Install MySQL client
+
+- name: Install MySQL client
+  package:
+    name: mysql-client
+    state: present
+
+# 🔥 Check if cities table exists
+
+- name: Check cities schema
+  shell: >
+    mysql -h {{ mysql_host }}
+    -uroot
+    -p{{ mysql_root_password }}
+    -se "use cities;"
+  register: mysql_schema_check
+  ignore_errors: yes
+  changed_when: false
+
+# 🔥 Load schema if not exists
+
+- name: Load shipping schema
+  shell: >
+    mysql -h {{ mysql_host }}
+    -uroot
+    -p{{ mysql_root_password }}
+    < /app/db/schema.sql
+  when: mysql_schema_check.rc != 0
+
+# 🔥 Load app master data
+
+- name: Load shipping app data
+  shell: >
+    mysql -h {{ mysql_host }}
+    -uroot
+    -p{{ mysql_root_password }}
+    < /app/db/app-user.sql
+  when: mysql_schema_check.rc != 0
+
+# 🔥 Load master data
+
+- name: Load shipping master data
+  shell: >
+    mysql -h {{ mysql_host }}
+    -uroot
+    -p{{ mysql_root_password }}
+    < /app/db/master-data.sql
+  when: mysql_schema_check.rc != 0

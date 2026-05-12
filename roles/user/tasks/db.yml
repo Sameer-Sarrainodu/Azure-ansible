@@ -1,0 +1,20 @@
+- name: Install Mongo client
+  package:
+    name: mongodb-mongosh
+    state: present
+
+# 🔥 Check if users DB exists
+
+- name: Check if users DB exists
+  command: >
+    mongosh --host {{ mongo_host }} --quiet
+    --eval 'db.getMongo().getDBNames().indexOf("users")'
+  register: mongo_check
+  changed_when: false
+
+# 🔥 Load schema only once
+
+- name: Load users schema
+  shell: >
+    mongosh --host {{ mongo_host }} < /app/db/master-data.js
+  when: mongo_check.stdout | int < 0

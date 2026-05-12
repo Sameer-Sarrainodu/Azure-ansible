@@ -1,0 +1,47 @@
+# 🔥 Base setup
+
+- name: Include common role
+  include_role:
+    name: common
+
+# 🔥 Download artifact
+
+- name: Download user artifact
+  get_url:
+    url: "{{ user_repo_url }}"
+    dest: /tmp/user.zip
+
+# 🔥 Clean old app
+
+- name: Remove old app content
+  file:
+    path: "{{ user_app_dir }}"
+    state: absent
+
+- name: Recreate app directory
+  file:
+    path: "{{ user_app_dir }}"
+    state: directory
+    owner: roboshop
+    group: roboshop
+
+# 🔥 Extract app
+
+- name: Extract user artifact
+  unarchive:
+    src: /tmp/user.zip
+    dest: /tmp/
+    remote_src: yes
+
+# 🔥 Copy app files
+
+- name: Copy user files
+  shell: |
+    cp -r /tmp/user-main/* {{ user_app_dir }}/
+
+# 🔥 Install dependencies
+
+- name: Install npm dependencies
+  shell: npm install
+  args:
+    chdir: "{{ user_app_dir }}"

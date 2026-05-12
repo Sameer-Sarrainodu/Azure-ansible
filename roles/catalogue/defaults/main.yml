@@ -1,0 +1,5 @@
+catalogue_port: 8080
+
+catalogue_repo_url: "https://github.com/roboshop-devops-project/catalogue/archive/main.zip"
+
+mongo_host: "mongodb"

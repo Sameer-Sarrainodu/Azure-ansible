@@ -1,0 +1,15 @@
+- name: Configure systemd service
+  template:
+    src: shipping.service.j2
+    dest: /etc/systemd/system/shipping.service
+  notify: restart shipping
+
+- name: Reload systemd
+  systemd:
+    daemon_reload: yes
+
+- name: Enable and start shipping service
+  service:
+    name: shipping
+    state: started
+    enabled: yes

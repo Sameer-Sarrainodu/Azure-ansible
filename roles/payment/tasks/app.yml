@@ -1,0 +1,62 @@
+# 🔥 Base setup
+
+- name: Include common role
+  include_role:
+    name: common
+
+# 🔥 Install Python dependencies
+
+- name: Install Python packages
+  package:
+    name:
+      - python3
+      - python3-pip
+      - python3-venv
+    state: present
+
+# 🔥 Download artifact
+
+- name: Download payment artifact
+  get_url:
+    url: "{{ payment_repo_url }}"
+    dest: /tmp/payment.zip
+
+# 🔥 Clean old app
+
+- name: Remove old app content
+  file:
+    path: "{{ payment_app_dir }}"
+    state: absent
+
+- name: Recreate app directory
+  file:
+    path: "{{ payment_app_dir }}"
+    state: directory
+    owner: roboshop
+    group: roboshop
+
+# 🔥 Extract app
+
+- name: Extract payment artifact
+  unarchive:
+    src: /tmp/payment.zip
+    dest: /tmp/
+    remote_src: yes
+
+# 🔥 Copy app files
+
+- name: Copy payment files
+  shell: |
+    cp -r /tmp/payment-main/* {{ payment_app_dir }}/
+
+# 🔥 Create Python virtual environment
+
+- name: Create Python venv
+  command: python3 -m venv /app/venv
+
+# 🔥 Install Python dependencies
+
+- name: Install Python requirements
+  pip:
+    requirements: /app/requirements.txt
+    virtualenv: /app/venv

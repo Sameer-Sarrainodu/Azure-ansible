@@ -1,0 +1,6 @@
+cart_port: 8080
+
+cart_repo_url: "https://github.com/roboshop-devops-project/cart/archive/main.zip"
+
+redis_host: "redis"
+catalogue_host: "catalogue"

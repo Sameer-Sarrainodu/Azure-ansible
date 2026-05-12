@@ -1,0 +1,20 @@
+- name: Install Mongo client
+  package:
+    name: mongodb-mongosh
+    state: present
+
+# 🔥 Check DB existence
+
+- name: Check if catalogue DB exists
+  command: >
+    mongosh --host {{ mongo_host }} --quiet
+    --eval 'db.getMongo().getDBNames().indexOf("catalogue")'
+  register: mongo_check
+  changed_when: false
+
+# 🔥 Load schema only once
+
+- name: Load catalogue schema
+  shell: >
+    mongosh --host {{ mongo_host }} < /app/db/master-data.js
+  when: mongo_check.stdout | int < 0

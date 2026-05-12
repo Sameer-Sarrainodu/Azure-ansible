@@ -1,0 +1,4 @@
+- name: restart shipping
+  service:
+    name: shipping
+    state: restarted

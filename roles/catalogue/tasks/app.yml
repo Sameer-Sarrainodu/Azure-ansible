@@ -1,0 +1,47 @@
+# 🔥 Base setup
+
+- name: Include common role
+  include_role:
+    name: common
+
+# 🔥 Download app artifact
+
+- name: Download catalogue artifact
+  get_url:
+    url: "{{ catalogue_repo_url }}"
+    dest: /tmp/catalogue.zip
+
+# 🔥 Clean old app
+
+- name: Remove old app content
+  file:
+    path: "{{ catalogue_app_dir }}"
+    state: absent
+
+- name: Recreate app directory
+  file:
+    path: "{{ catalogue_app_dir }}"
+    state: directory
+    owner: roboshop
+    group: roboshop
+
+# 🔥 Extract app
+
+- name: Extract catalogue artifact
+  unarchive:
+    src: /tmp/catalogue.zip
+    dest: /tmp/
+    remote_src: yes
+
+# 🔥 Copy app files
+
+- name: Copy catalogue files
+  shell: |
+    cp -r /tmp/catalogue-main/* {{ catalogue_app_dir }}/
+
+# 🔥 Install node dependencies
+
+- name: Install npm dependencies
+  shell: npm install
+  args:
+    chdir: "{{ catalogue_app_dir }}"

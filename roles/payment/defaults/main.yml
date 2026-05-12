@@ -1,0 +1,11 @@
+payment_port: 8080
+
+payment_repo_url: "https://github.com/roboshop-devops-project/payment/archive/main.zip"
+
+rabbitmq_host: "rabbitmq"
+
+rabbitmq_user: "roboshop"
+rabbitmq_password: "RabbitMQ@1"
+
+cart_host: "cart"
+user_host: "user"

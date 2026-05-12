@@ -1,0 +1,8 @@
+shipping_port: 8080
+
+shipping_repo_url: "https://github.com/roboshop-devops-project/shipping/archive/main.zip"
+
+mysql_host: "mysql"
+mysql_root_password: "RoboShop@1"
+
+cart_host: "cart"

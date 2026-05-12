@@ -1,0 +1,2 @@
+nginx_service_name: "nginx"
+frontend_app_dir: "/usr/share/nginx/html"

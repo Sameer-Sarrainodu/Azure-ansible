@@ -1,0 +1,47 @@
+# 🔥 Base setup
+
+- name: Include common role
+  include_role:
+    name: common
+
+# 🔥 Download artifact
+
+- name: Download cart artifact
+  get_url:
+    url: "{{ cart_repo_url }}"
+    dest: /tmp/cart.zip
+
+# 🔥 Clean old app
+
+- name: Remove old app content
+  file:
+    path: "{{ cart_app_dir }}"
+    state: absent
+
+- name: Recreate app directory
+  file:
+    path: "{{ cart_app_dir }}"
+    state: directory
+    owner: roboshop
+    group: roboshop
+
+# 🔥 Extract app
+
+- name: Extract cart artifact
+  unarchive:
+    src: /tmp/cart.zip
+    dest: /tmp/
+    remote_src: yes
+
+# 🔥 Copy app files
+
+- name: Copy cart files
+  shell: |
+    cp -r /tmp/cart-main/* {{ cart_app_dir }}/
+
+# 🔥 Install dependencies
+
+- name: Install npm dependencies
+  shell: npm install
+  args:
+    chdir: "{{ cart_app_dir }}"

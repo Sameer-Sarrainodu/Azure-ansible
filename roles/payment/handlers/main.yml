@@ -1,0 +1,4 @@
+- name: restart payment
+  service:
+    name: payment
+    state: restarted

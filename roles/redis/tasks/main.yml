@@ -1,0 +1,35 @@
+- name: Install Redis on Ubuntu
+  when: ansible_os_family == "Debian"
+  block:
+
+    - name: Install Redis
+      apt:
+        name: redis-server
+        state: present
+        update_cache: yes
+
+- name: Install Redis on RHEL
+  when: ansible_os_family == "RedHat"
+  block:
+
+    - name: Install Redis
+      dnf:
+        name: redis
+        state: present
+
+# 🔥 Configure bind IP
+
+- name: Configure Redis bind IP
+  replace:
+    path: "{{ redis_conf_file }}"
+    regexp: '127.0.0.1'
+    replace: '{{ redis_bind_ip }}'
+  notify: restart redis
+
+# 🚀 Start Redis
+
+- name: Enable and start Redis
+  service:
+    name: "{{ redis_service_name }}"
+    state: started
+    enabled: yes
