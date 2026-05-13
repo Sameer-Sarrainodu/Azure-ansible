@@ -1,4 +1,7 @@
 ansible_user: azureuser
 ansible_ssh_private_key_file: ~/.ssh/roboshop-azure
 
-env: dev
+mongo_host: mongodb.roboshop.internal
+mysql_host: mysql.roboshop.internal
+redis_host: redis.roboshop.internal
+rabbitmq_host: rabbitmq.roboshop.internal
