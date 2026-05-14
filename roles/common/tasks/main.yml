@@ -13,25 +13,7 @@
 
 # 🔥 Install NodeJS
 
-- name: Create keyrings directory
-  file:
-    path: /etc/apt/keyrings
-    state: directory
-    mode: '0755'
-
-- name: Download NodeSource GPG key
-  get_url:
-    url: nodesource.com
-    dest: /etc/apt/keyrings/nodesource.gpg
-    mode: '0644'
-
-- name: Add NodeSource deb repository (Node 18)
-  apt_repository:
-    repo: "deb [signed-by=/etc/apt/keyrings/nodesource.gpg] nodesource.com nodistro main"
-    state: present
-    filename: nodesource
-
-- name: Install NodeJS
+- name: Install NodeJS 20 from standard repository
   apt:
     name: nodejs
     state: present
@@ -51,6 +33,11 @@
     state: directory
     owner: roboshop
     group: roboshop
+
+# 🔥 Install Application Dependencies
+- name: installing depedencies
+  community.general.npm:
+    path: /app
 
 # 🔥 Disable firewall (for lab; in prod use NSG instead)
 - name: Disable ufw
