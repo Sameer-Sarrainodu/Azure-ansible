@@ -11,10 +11,11 @@
   timezone:
     name: "{{ timezone }}"
 
-# 🔥 Install NodeJS (required for most RoboShop services)
-- name: Add NodeSource repo
+# 🔥 Install NodeJS
+
+- name: Add NodeSource repository
   shell: |
-    curl -fsSL https://deb.nodesource.com/setup_{{ node_version }}.x | bash -
+    curl -fsSL https://deb.nodesource.com/setup_18.x | sudo -E bash -
   args:
     executable: /bin/bash
 
@@ -22,6 +23,7 @@
   apt:
     name: nodejs
     state: present
+    update_cache: yes
 
 # 🔥 Create roboshop user (standard practice)
 - name: Create roboshop user
