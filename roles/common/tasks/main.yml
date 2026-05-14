@@ -24,26 +24,24 @@
 
 # 🔥 Install NodeJS + npm
 
-- name: Add NodeSource repository
-  shell: |
-    curl -fsSL https://deb.nodesource.com/setup_18.x | bash -
-  args:
-    executable: /bin/bash
-
-- name: Install NodeJS
+- name: Install NodeJS and npm
   apt:
-    name: nodejs
+    name:
+      - nodejs
+      - npm
     state: present
     update_cache: yes
 
-# ✅ Verify NodeJS installation
+# ✅ Verify NodeJS
 
 - name: Verify NodeJS
   command: node -v
   register: node_version_output
   changed_when: false
 
-- name: Verify npm installation
+# ✅ Verify npm
+
+- name: Verify npm
   command: npm -v
   register: npm_version_output
   changed_when: false
