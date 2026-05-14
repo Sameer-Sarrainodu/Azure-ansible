@@ -13,11 +13,23 @@
 
 # 🔥 Install NodeJS
 
-- name: Add NodeSource repository
-  shell: |
-    curl -fsSL https://deb.nodesource.com/setup_18.x | sudo -E bash -
-  args:
-    executable: /bin/bash
+- name: Create keyrings directory
+  file:
+    path: /etc/apt/keyrings
+    state: directory
+    mode: '0755'
+
+- name: Download NodeSource GPG key
+  get_url:
+    url: nodesource.com
+    dest: /etc/apt/keyrings/nodesource.gpg
+    mode: '0644'
+
+- name: Add NodeSource deb repository (Node 18)
+  apt_repository:
+    repo: "deb [signed-by=/etc/apt/keyrings/nodesource.gpg] nodesource.com nodistro main"
+    state: present
+    filename: nodesource
 
 - name: Install NodeJS
   apt:

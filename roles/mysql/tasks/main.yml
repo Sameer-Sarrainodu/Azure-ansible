@@ -1,23 +1,27 @@
-- name: Install MySQL server
-  apt:
+- name: Installing MySQL Server
+  ansible.builtin.apt:
     name: mysql-server
     state: present
     update_cache: yes
 
-- name: Start and enable MySQL
-  service:
+- name: Starting and enabling MySQL service
+  ansible.builtin.service:
     name: mysql
     state: started
     enabled: yes
 
-- name: Set MySQL root password
-  shell: |
-    mysql -e "ALTER USER 'root'@'localhost' IDENTIFIED WITH mysql_native_password BY '{{ mysql_root_password }}'; FLUSH PRIVILEGES;"
-  ignore_errors: yes
+- name: Install boto3 and botocore
+  ansible.builtin.pip:
+    name: 
+      - boto3
+      - botocore
+    executable: pip3
+    state: present
 
-- name: Allow remote connections
-  replace:
-    path: /etc/mysql/mysql.conf.d/mysqld.cnf
-    regexp: '127.0.0.1'
-    replace: '0.0.0.0'
+- name: Setting root password
+  community.mysql.mysql_user:
+    name: root
+    password: "{{ mysql_root_password }}"
+    login_unix_socket: /var/run/mysqld/mysqld.sock
+    state: present
   notify: restart mysql
