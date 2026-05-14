@@ -1,48 +1,57 @@
+
+# 🔄 Update apt cache
+
 - name: Update apt cache
   apt:
     update_cache: yes
 
+# 📦 Install common packages
+
 - name: Install common packages
   apt:
-    name: "{{ common_packages }}"
+    name:
+      - curl
+      - unzip
+      - git
+      - nginx
     state: present
+
+# 🌍 Set timezone
 
 - name: Set timezone
   timezone:
-    name: "{{ timezone }}"
+    name: Asia/Kolkata
 
-# 🔥 Install NodeJS
+# 🔥 Install NodeJS + npm
 
-- name: Install NodeJS 20 from standard repository
+- name: Add NodeSource repository
+  shell: |
+    curl -fsSL https://deb.nodesource.com/setup_18.x | bash -
+  args:
+    executable: /bin/bash
+
+- name: Install NodeJS
   apt:
     name: nodejs
     state: present
     update_cache: yes
 
-# 🔥 Create roboshop user (standard practice)
-- name: Create roboshop user
-  user:
-    name: roboshop
-    shell: /bin/bash
-    create_home: yes
+# ✅ Verify NodeJS installation
 
-# 🔥 Create app directory
-- name: Create app directory
-  file:
-    path: /app
-    state: directory
-    owner: roboshop
-    group: roboshop
+- name: Verify NodeJS
+  command: node -v
+  register: node_version_output
+  changed_when: false
 
-# 🔥 Install Application Dependencies
-- name: installing depedencies
-  community.general.npm:
-    path: /app
+- name: Verify npm installation
+  command: npm -v
+  register: npm_version_output
+  changed_when: false
 
-# 🔥 Disable firewall (for lab; in prod use NSG instead)
-- name: Disable ufw
-  service:
-    name: ufw
-    state: stopped
-    enabled: no
-  ignore_errors: yes
+- name: Print NodeJS version
+  debug:
+    msg: "{{ node_version_output.stdout }}"
+
+- name: Print npm version
+  debug:
+    msg: "{{ npm_version_output.stdout }}"
