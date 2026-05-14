@@ -1,21 +1,20 @@
-- name: Install MongoDB client
-  apt:
+# 🔥 Install the client
+- name: Install MongoDB shell
+  ansible.builtin.apt:
     name: mongodb-clients
     state: present
     update_cache: yes
 
 # 🔥 Check DB existence
-
 - name: Check if catalogue DB exists
-  command: >
-    mongo --host {{ mongo_host }} --quiet
-    --eval 'db.getMongo().getDBNames().indexOf("catalogue")'
+  ansible.builtin.command: >
+    mongo --host {{ mongo_host }} --quiet --eval 'db.getMongo().getDBNames().indexOf("catalogue")'
   register: mongo_check
   changed_when: false
+  failed_when: false # Prevents failure if the host is temporarily unreachable
 
 # 🔥 Load schema only once
-
 - name: Load catalogue schema
-  shell: >
+  ansible.builtin.shell: >
     mongo --host {{ mongo_host }} < /app/db/master-data.js
-  when: mongo_check.stdout | int < 0
+  when: "mongo_check.stdout | int == -1"
