@@ -1,13 +1,14 @@
-- name: Install Mongo client
-  package:
-    name: mongodb-mongosh
+- name: Install MongoDB client
+  apt:
+    name: mongodb-clients
     state: present
+    update_cache: yes
 
 # 🔥 Check DB existence
 
 - name: Check if catalogue DB exists
   command: >
-    mongosh --host {{ mongo_host }} --quiet
+    mongo --host {{ mongo_host }} --quiet
     --eval 'db.getMongo().getDBNames().indexOf("catalogue")'
   register: mongo_check
   changed_when: false
@@ -16,5 +17,5 @@
 
 - name: Load catalogue schema
   shell: >
-    mongosh --host {{ mongo_host }} < /app/db/master-data.js
+    mongo --host {{ mongo_host }} < /app/db/master-data.js
   when: mongo_check.stdout | int < 0
