@@ -1,28 +1,22 @@
-- name: Installing MySQL Server
-  apt:
+- name: Update apt cache
+  ansible.builtin.apt:
+    update_cache: yes
+    cache_valid_time: 3600
+
+- name: Install MySQL server
+  ansible.builtin.apt:
     name: mysql-server
     state: present
-    update_cache: yes
 
-- name: Starting and enabling MySQL service
-  service:
+- name: Start and enable MySQL service
+  ansible.builtin.service:
     name: mysql
     state: started
     enabled: yes
 
 - name: Set MySQL root password
-  shell: |
-    sudo mysql <<EOF
-    ALTER USER 'root'@'localhost' IDENTIFIED WITH mysql_native_password BY '{{ mysql_root_password }}';
-    FLUSH PRIVILEGES;
-    EOF
-  args:
-    executable: /bin/bash
-  ignore_errors: yes
-
-- name: Allow remote connections
-  replace:
-    path: /etc/mysql/mysql.conf.d/mysqld.cnf
-    regexp: '127.0.0.1'
-    replace: '0.0.0.0'
-  notify: restart mysql
+  ansible.builtin.command: >
+    mysql -u root -e "ALTER USER 'root'@'localhost' IDENTIFIED WITH mysql_native_password BY '{{ mysql_root_password }}'; FLUSH PRIVILEGES;"
+  when: MYSQL_ROOT_PASSWORD is defined
+  changed_when: true
+  no_log: true
