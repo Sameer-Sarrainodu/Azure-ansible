@@ -1,6 +1,8 @@
 - name: Installing MySQL Server
   ansible.builtin.apt:
-    name: mysql-server
+    name: 
+      - mysql-server
+      - python3-pymysql  # Required for community.mysql modules to work
     state: present
     update_cache: yes
 
@@ -13,10 +15,15 @@
 - name: Setting root password
   community.mysql.mysql_user:
     name: root
-    host: localhost
+    host: "{{ item }}"
     password: "{{ mysql_root_password }}"
     login_unix_socket: /var/run/mysqld/mysqld.sock
-    check_implicit_admin: true
+    login_user: root
+    check_implicit_admin: yes
     plugin: mysql_native_password
     state: present
+  with_items:
+    - localhost
+    - 127.0.0.1
+    - ::1
   notify: restart mysql
