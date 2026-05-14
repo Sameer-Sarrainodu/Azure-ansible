@@ -1,50 +1,19 @@
-- name: Install MySQL on Ubuntu
-  when: ansible_os_family == "Debian"
-  block:
-
-    - name: Install MySQL server
-      apt:
-        name: mysql-server
-        state: present
-        update_cache: yes
-
-- name: Install MySQL on RHEL
-  when: ansible_os_family == "RedHat"
-  block:
-
-    - name: Install MySQL server
-      dnf:
-        name: mysql-server
-        state: present
-
-# 🔥 Start MySQL
-
-- name: Start MySQL service
-  service:
-    name: "{{ mysql_service_name }}"
-    state: started
-    enabled: yes
-  
-- name: Install PyMySQL dependency
+- name: Install MySQL server
   apt:
-    name: python3-pymysql
+    name: mysql-server
     state: present
     update_cache: yes
 
-# 🔐 Set root password (idempotent)
+- name: Start and enable MySQL
+  service:
+    name: mysql
+    state: started
+    enabled: yes
 
 - name: Set MySQL root password
-  community.mysql.mysql_user:
-    name: root
-    host: localhost
-    password: "{{ mysql_root_password }}"
-    login_unix_socket: /var/run/mysqld/mysqld.sock
-    check_implicit_admin: true
-    priv: "*.*:ALL,GRANT"
-    state: present
-
-
-# 🌐 Allow remote connections
+  shell: |
+    mysql -e "ALTER USER 'root'@'localhost' IDENTIFIED WITH mysql_native_password BY '{{ mysql_root_password }}'; FLUSH PRIVILEGES;"
+  ignore_errors: yes
 
 - name: Allow remote connections
   replace:
@@ -52,4 +21,3 @@
     regexp: '127.0.0.1'
     replace: '0.0.0.0'
   notify: restart mysql
-  when: ansible_os_family == "Debian"
