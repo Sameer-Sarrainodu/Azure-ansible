@@ -43,6 +43,7 @@
     priv: "*.*:ALL,GRANT"
     state: present
 
+
 # 🌐 Allow remote connections
 
 - name: Allow remote connections
