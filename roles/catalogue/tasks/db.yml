@@ -1,9 +1,34 @@
-# 🔥 Install the client
-- name: Install MongoDB shell
+- name: Install prerequisites
   ansible.builtin.apt:
-    name: mongodb-clients
+    name:
+      - curl
+      - gnupg
+      - ca-certificates
     state: present
     update_cache: yes
+
+- name: Add MongoDB GPG key
+  ansible.builtin.shell: |
+    curl -fsSL https://pgp.mongodb.com/server-8.0.asc | \
+    gpg --dearmor -o /usr/share/keyrings/mongodb-server-8.0.gpg
+  args:
+    creates: /usr/share/keyrings/mongodb-server-8.0.gpg
+  changed_when: false
+
+- name: Add MongoDB official repository
+  ansible.builtin.apt_repository:
+    repo: "deb [ arch=amd64,arm64 signed-by=/usr/share/keyrings/mongodb-server-8.0.gpg ] https://repo.mongodb.org/apt/ubuntu {{ ansible_distribution_release }}/mongodb-org/8.0 multiverse"
+    state: present
+    filename: mongodb-org-8.0
+
+- name: Update apt cache after adding MongoDB repo
+  ansible.builtin.apt:
+    update_cache: yes
+
+- name: Install mongosh
+  ansible.builtin.apt:
+    name: mongodb-mongosh
+    state: present
 
 # 🔥 Check DB existence
 - name: Check if catalogue DB exists
