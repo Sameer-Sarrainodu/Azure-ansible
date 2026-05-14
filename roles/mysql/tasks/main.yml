@@ -24,6 +24,12 @@
     name: "{{ mysql_service_name }}"
     state: started
     enabled: yes
+  
+- name: Install PyMySQL dependency
+  apt:
+    name: python3-pymysql
+    state: present
+    update_cache: yes
 
 # 🔐 Set root password (idempotent)
 
